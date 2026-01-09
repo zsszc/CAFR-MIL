@@ -19,7 +19,7 @@ It comes with a companion regularization term, **Orthogonal Loss**, which forces
 CAFR operates by recalibrating feature channels based on the global context of the slide (bag), followed by a residual connection and LayerNorm for training stability.
 
 > **![framework](CAFR_framework.png)**
-> *Suggested Caption: The overall architecture of CAFR. It takes instance features as input, models the global context, generates dynamic channel weights, and refines the features via a residual mechanism.*
+> *The overall architecture of CAFR. It takes instance features as input, models the global context, generates dynamic channel weights, and refines the features via a residual mechanism.*
 
 ---
 
