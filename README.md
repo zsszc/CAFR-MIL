@@ -1,9 +1,3 @@
-这份 README.md 是为您专门定制的。它提取了您提供的代码核心逻辑（全局上下文建模、通道注意力、残差连接、正交Loss），并将 `cafr.py` 包装成了一个专业的、通用的即插即用模块。
-
-您可以直接复制以下内容到您的 GitHub 仓库的 `README.md` 文件中。
-
----
-
 # CAFR: Context-Aware Feature Refiner for Multiple Instance Learning
 
 **Context-Aware Feature Refiner (CAFR)** is a lightweight, plug-and-play module designed to enhance instance-level feature representation in Multiple Instance Learning (MIL) tasks, specifically for Computational Pathology (WSI analysis).
@@ -151,38 +145,3 @@ To prevent the "feature collapse" problem where different channels learn redunda
 
 
 This forces the Gram matrix of normalized features to resemble an Identity matrix, meaning different feature channels are uncorrelated.
-
----
-
-## 📊 Performance Analysis
-
-*Based on integration with TransMIL on Camelyon16 dataset.*
-
-| Method | Accuracy | AUC |
-| --- | --- | --- |
-| TransMIL Baseline | 0.xx | 0.xx |
-| **TransMIL + CAFR + Orth Loss** | **0.xx** | **0.xx** |
-
-> *Note: By observing the Gram Matrix visualization during training, you will see off-diagonal elements fading to zero, indicating successful feature decoupling.*
-
----
-
-## 📝 Citation
-
-If you use this code for your research, please cite our paper:
-
-```bibtex
-@article{YourName2024CAFR,
-  title={Context-Aware Feature Refiner for ...},
-  author={Your Name and Co-authors},
-  journal={...},
-  year={2024}
-}
-
-```
-
----
-
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
