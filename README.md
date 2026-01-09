@@ -1,11 +1,16 @@
+这份 README.md 是为您专门定制的。它提取了您提供的代码核心逻辑（全局上下文建模、通道注意力、残差连接、正交Loss），并将 `cafr.py` 包装成了一个专业的、通用的即插即用模块。
 
- CAFR: Context-Aware Feature Refiner for Multiple Instance Learning
+您可以直接复制以下内容到您的 GitHub 仓库的 `README.md` 文件中。
+
+---
+
+# CAFR: Context-Aware Feature Refiner for Multiple Instance Learning
 
 **Context-Aware Feature Refiner (CAFR)** is a lightweight, plug-and-play module designed to enhance instance-level feature representation in Multiple Instance Learning (MIL) tasks, specifically for Computational Pathology (WSI analysis).
 
 It comes with a companion regularization term, **Orthogonal Loss**, which forces the network to learn diverse and non-redundant features.
 
- 🚀 Key Features
+## 🚀 Key Features
 
 * **Global Context Modeling:** Aggregates bag-level global information to guide instance feature refinement.
 * **Dynamic Channel Attention:** Automatically suppresses noise channels (e.g., staining background) and enhances semantic-rich channels.
@@ -15,7 +20,7 @@ It comes with a companion regularization term, **Orthogonal Loss**, which forces
 
 ---
 
- 🛠️ Framework Architecture
+## 🛠️ Framework Architecture
 
 CAFR operates by recalibrating feature channels based on the global context of the slide (bag), followed by a residual connection and LayerNorm for training stability.
 
@@ -24,12 +29,12 @@ CAFR operates by recalibrating feature channels based on the global context of t
 
 ---
 
- 📦 Installation
+## 📦 Installation
 
 Simply copy `cafr.py` into your project directory.
 
 ```bash
- Directory structure example
+# Directory structure example
 .
 ├── models/
 │   ├── cafr.py          <-- Core Module
@@ -47,11 +52,11 @@ Simply copy `cafr.py` into your project directory.
 
 ---
 
- 💻 Usage Guide
+## 💻 Usage Guide
 
 Integrating CAFR into your existing MIL model takes just 3 steps.
 
- Step 1: Import and Initialize
+### Step 1: Import and Initialize
 
 In your model definition file (e.g., `transmil.py`, `clam.py`), initialize `ContextAwareFeatureRefiner`.
 
@@ -63,63 +68,63 @@ class YourMILModel(nn.Module):
     def __init__(self, input_dim=256, n_classes=2):
         super(YourMILModel, self).__init__()
         
-         1. Projection layer (optional, adjust dimensions)
+        # 1. Projection layer (optional, adjust dimensions)
         self.fc1 = nn.Linear(768, 256) 
         
-         2. Initialize CAFR
-         input_dim: Dimension of your features
-         reduction: Compression ratio for the bottleneck (default: 16)
+        # 2. Initialize CAFR
+        # input_dim: Dimension of your features
+        # reduction: Compression ratio for the bottleneck (default: 16)
         self.cafr = ContextAwareFeatureRefiner(input_dim=256, reduction=16)
         
-         ... existing aggregator layers (Attention, Transformer, etc.) ...
+        # ... existing aggregator layers (Attention, Transformer, etc.) ...
         self.aggregator = ... 
         self.classifier = ...
 
     def forward(self, x):
-         x shape: [Batch, N_instances, 768]
+        # x shape: [Batch, N_instances, 768]
         
-        h = self.fc1(x)   [B, N, 256]
+        h = self.fc1(x)  # [B, N, 256]
         
-         3. Apply CAFR Refinement
-         This enhances 'h' before it goes into the aggregator
+        # 3. Apply CAFR Refinement
+        # This enhances 'h' before it goes into the aggregator
         h_refined = self.cafr(h) 
         
-         Important: Return refined features for Orthogonal Loss calculation
+        # Important: Return refined features for Orthogonal Loss calculation
         features_for_loss = h_refined 
         
-         Continue with your standard MIL aggregation
+        # Continue with your standard MIL aggregation
         logits = self.aggregator(h_refined)
         
         return logits, features_for_loss
 
 ```
 
- Step 2: Training with Orthogonal Loss
+### Step 2: Training with Orthogonal Loss
 
 In your training script (`train.py`), add the `OrthogonalLoss` to regularize the feature space.
 
 ```python
 from cafr import OrthogonalLoss
 
- 1. Initialize Loss
+# 1. Initialize Loss
 criterion_cls = nn.CrossEntropyLoss()
 criterion_orth = OrthogonalLoss()
 
- Hyperparameter: Lambda for Orthogonal Loss (Recommended: 0.05 - 0.1)
+# Hyperparameter: Lambda for Orthogonal Loss (Recommended: 0.05 - 0.1)
 lambda_orth = 0.07 
 
- 2. In your training loop
+# 2. In your training loop
 for data, label in loader:
     logits, features = model(data)
     
-     Calculate Main Loss (Classification)
+    # Calculate Main Loss (Classification)
     loss_cls = criterion_cls(logits, label)
     
-     Calculate Orthogonal Loss
-     It automatically handles Batch Size > 1 by flattening instances
+    # Calculate Orthogonal Loss
+    # It automatically handles Batch Size > 1 by flattening instances
     loss_orth = criterion_orth(features)
     
-     Total Loss
+    # Total Loss
     loss = loss_cls + (lambda_orth * loss_orth)
     
     loss.backward()
@@ -129,9 +134,9 @@ for data, label in loader:
 
 ---
 
- 🔬 How it Works
+## 🔬 How it Works
 
- 1. Context-Aware Feature Refinement
+### 1. Context-Aware Feature Refinement
 
 Unlike standard attention mechanisms that look at instances in isolation or only spatial relationships, CAFR computes a **Bag-Level Context** vector (`mean(x)`).
 
@@ -139,7 +144,7 @@ Unlike standard attention mechanisms that look at instances in isolation or only
 
 This context vector is used to generate channel-wise attention weights via a bottleneck MLP, ensuring that the network highlights features relevant to the *global* slide diagnosis.
 
- 2. Orthogonal Loss
+### 2. Orthogonal Loss
 
 To prevent the "feature collapse" problem where different channels learn redundant information, we impose an orthogonality constraint on the feature matrix .
 
@@ -149,7 +154,7 @@ This forces the Gram matrix of normalized features to resemble an Identity matri
 
 ---
 
- 📊 Performance Analysis
+## 📊 Performance Analysis
 
 *Based on integration with TransMIL on Camelyon16 dataset.*
 
@@ -162,7 +167,7 @@ This forces the Gram matrix of normalized features to resemble an Identity matri
 
 ---
 
- 📝 Citation
+## 📝 Citation
 
 If you use this code for your research, please cite our paper:
 
@@ -178,6 +183,6 @@ If you use this code for your research, please cite our paper:
 
 ---
 
- 📜 License
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
