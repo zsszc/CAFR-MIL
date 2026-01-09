@@ -145,3 +145,5 @@ To prevent the "feature collapse" problem where different channels learn redunda
 
 
 This forces the Gram matrix of normalized features to resemble an Identity matrix, meaning different feature channels are uncorrelated.
+
+---
